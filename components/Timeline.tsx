@@ -12,7 +12,8 @@ const Timeline: React.FC = () => {
          <div className="flex items-center gap-4">
             <div className="flex items-center gap-1 text-gray-400 hover:text-white cursor-pointer transition-colors">
               <Calendar size={14} />
-              <span className="text-xs font-mono">2025/12/14</span>
+              <span className="text-xs font-mono hidden sm:inline">2025/12/14</span>
+              <span className="text-xs font-mono sm:hidden">12/14</span>
             </div>
             <div className="h-3 w-px bg-gray-700"></div>
             <div className="flex gap-2">
@@ -20,7 +21,7 @@ const Timeline: React.FC = () => {
                <button className="text-white hover:text-blue-400 transition-colors"><Play size={16} fill="currentColor" /></button>
                <button className="text-gray-400 hover:text-white transition-colors"><ChevronRight size={16} /></button>
             </div>
-            <div className="text-xs text-blue-400 font-mono cursor-pointer hover:text-blue-300">1X SPEED</div>
+            <div className="text-xs text-blue-400 font-mono cursor-pointer hover:text-blue-300 hidden sm:block">1X SPEED</div>
          </div>
          <div className="flex gap-2">
             <button className="text-xs px-2 py-1 rounded bg-gray-800 text-gray-300 border border-gray-700 hover:bg-gray-700 transition-colors">1H</button>
@@ -43,8 +44,10 @@ const Timeline: React.FC = () => {
                 <div className="absolute bottom-4 left-0 right-0 h-2 bg-green-900/40"></div>
                 {hour % 3 === 0 && <div className="absolute bottom-4 left-10 right-2 h-2 bg-green-500/80"></div>}
                 
-                {/* Tick Label */}
-                <span className="text-[10px] text-gray-500 font-mono ml-1 mb-1">{hour.toString().padStart(2, '0')}:00</span>
+                {/* Tick Label - Hide intermediate labels on mobile */}
+                <span className={`text-[10px] text-gray-500 font-mono ml-1 mb-1 ${hour % 2 !== 0 ? 'hidden sm:block' : ''}`}>
+                    {hour.toString().padStart(2, '0')}:00
+                </span>
                 <div className="h-1.5 w-px bg-gray-600"></div>
              </div>
            ))}

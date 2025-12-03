@@ -14,4 +14,5 @@ export interface SidebarItemProps {
   label: string;
   active?: boolean;
   collapsed: boolean;
+  onClick?: () => void;
 }

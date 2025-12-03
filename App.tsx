@@ -1,42 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  Grid, 
   LayoutTemplate, 
   Settings, 
   Video, 
   Download, 
   Users, 
-  Search, 
-  Bell, 
   ChevronLeft,
   ChevronRight,
-  Layers,
   Activity
 } from 'lucide-react';
 
-import VideoFeed from './components/VideoFeed';
-import Timeline from './components/Timeline';
+import LiveMatrix from './components/LiveMatrix';
+import PlaybackView from './components/PlaybackView';
 import SidebarItem from './components/SidebarItem';
-import { CHANNELS } from './constants';
 
 export default function App() {
   const [collapsed, setCollapsed] = useState(false);
-  const [gridSize, setGridSize] = useState(4); // 2x2 (4), 3x3 (9), 4x4 (16) basically
+  const [currentView, setCurrentView] = useState<'live' | 'playback'>('live');
 
-  // Dynamically calculate grid class based on state (mock implementation for visual only)
-  // In a real app, this would change the `grid-cols` class.
-  const getGridCols = () => {
-    if (gridSize === 2) return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2';
-    if (gridSize === 4) return 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
-    if (gridSize === 9) return 'grid-cols-3 md:grid-cols-4 lg:grid-cols-5';
-    return 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
-  };
+  // Auto-collapse on mobile init
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setCollapsed(true);
+      }
+    };
+    
+    // Set initial state
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <div className="flex h-screen w-full bg-[#0a0a0a] text-gray-100 font-sans overflow-hidden selection:bg-blue-500/30">
       
       {/* Sidebar */}
-      <div className={`flex flex-col bg-[#111111] border-r border-gray-800 transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'}`}>
+      <div className={`flex flex-col bg-[#111111] border-r border-gray-800 transition-all duration-300 z-20 shrink-0 ${collapsed ? 'w-16' : 'w-64 absolute md:relative h-full shadow-2xl md:shadow-none'}`}>
         {/* Logo Area */}
         <div className="h-14 flex items-center px-4 border-b border-gray-800 bg-[#0f0f0f]">
           <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center shrink-0 shadow-lg shadow-blue-900/20">
@@ -50,8 +51,27 @@ export default function App() {
         {/* Menu Items */}
         <div className="flex-1 py-4 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-800">
           <div className={`px-4 mb-2 text-xs font-semibold text-gray-600 uppercase tracking-wider ${collapsed && 'hidden'}`}>Monitor</div>
-          <SidebarItem icon={LayoutTemplate} label="Live Matrix" active={true} collapsed={collapsed} />
-          <SidebarItem icon={Video} label="Playback" collapsed={collapsed} />
+          
+          <SidebarItem 
+            icon={LayoutTemplate} 
+            label="Live Matrix" 
+            active={currentView === 'live'} 
+            collapsed={collapsed} 
+            onClick={() => {
+              setCurrentView('live');
+              if (window.innerWidth < 768) setCollapsed(true);
+            }}
+          />
+          <SidebarItem 
+            icon={Video} 
+            label="Playback" 
+            active={currentView === 'playback'} 
+            collapsed={collapsed}
+            onClick={() => {
+              setCurrentView('playback');
+              if (window.innerWidth < 768) setCollapsed(true);
+            }} 
+          />
           <SidebarItem icon={Activity} label="Events" collapsed={collapsed} />
           
           <div className={`px-4 mt-6 mb-2 text-xs font-semibold text-gray-600 uppercase tracking-wider ${collapsed && 'hidden'}`}>System</div>
@@ -71,72 +91,9 @@ export default function App() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col h-full min-w-0">
-        
-        {/* Top Header / Toolbar */}
-        <div className="h-14 bg-[#111111] border-b border-gray-800 flex items-center justify-between px-4 z-10 shrink-0">
-           {/* Left: View Controls */}
-           <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-400 mr-2 hidden md:block">Views:</span>
-              <div className="flex bg-gray-800 rounded p-1 gap-1">
-                 <button 
-                    onClick={() => setGridSize(2)}
-                    className={`p-1 rounded transition-colors ${gridSize === 2 ? 'bg-gray-700 text-white shadow-sm' : 'text-gray-400 hover:text-white hover:bg-gray-700'}`}
-                 >
-                    <Grid size={16} />
-                 </button>
-                 <button 
-                    onClick={() => setGridSize(4)}
-                    className={`p-1 rounded transition-colors ${gridSize === 4 ? 'bg-gray-700 text-white shadow-sm' : 'text-gray-400 hover:text-white hover:bg-gray-700'}`}
-                 >
-                    <LayoutTemplate size={16} />
-                 </button>
-                 <button 
-                    onClick={() => setGridSize(9)}
-                    className={`p-1 rounded transition-colors ${gridSize === 9 ? 'bg-gray-700 text-white shadow-sm' : 'text-gray-400 hover:text-white hover:bg-gray-700'}`}
-                 >
-                    <Layers size={16} />
-                 </button>
-              </div>
-              <div className="h-4 w-px bg-gray-700 mx-2"></div>
-              <span className="text-sm font-semibold text-white truncate">Default View Group</span>
-           </div>
-
-           {/* Right: Search & Profile */}
-           <div className="flex items-center gap-4">
-              {/* Contextual Search Input */}
-              <div className="relative hidden md:block">
-                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                 <input 
-                   type="text" 
-                   placeholder="Find camera or event..." 
-                   className="bg-[#050505] border border-gray-700 text-sm rounded-full pl-9 pr-4 py-1.5 w-64 text-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-gray-600 transition-all"
-                 />
-                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-600 border border-gray-700 rounded px-1">⌘K</span>
-              </div>
-              
-              <button className="relative p-2 text-gray-400 hover:text-white transition-colors">
-                 <Bell size={18} />
-                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#111111]"></span>
-              </button>
-              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-blue-500 flex items-center justify-center text-xs font-bold text-white border-2 border-[#111111] shadow-sm cursor-pointer hover:opacity-90 transition-opacity">
-                AD
-              </div>
-           </div>
-        </div>
-
-        {/* Video Grid Area */}
-        <div className="flex-1 bg-black p-0.5 overflow-hidden relative">
-           <div className={`grid gap-0.5 w-full h-full auto-rows-fr ${getGridCols()}`}>
-              {CHANNELS.map(channel => (
-                <VideoFeed key={channel.id} channel={channel} />
-              ))}
-           </div>
-        </div>
-
-        {/* Timeline Docker */}
-        <Timeline />
+      {/* Main Content Area */}
+      <div className={`flex-1 flex flex-col h-full min-w-0 transition-opacity duration-200 ${!collapsed && window.innerWidth < 768 ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
+          {currentView === 'live' ? <LiveMatrix /> : <PlaybackView />}
       </div>
     </div>
   );
