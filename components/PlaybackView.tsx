@@ -6,6 +6,7 @@ import Timeline from './Timeline';
 import LanguageSelector from './LanguageSelector';
 import { CHANNELS } from '../constants';
 import { useLanguage } from '../LanguageContext';
+import { Channel } from '../types';
 
 const ToggleSwitch = ({ enabled, onChange }: { enabled: boolean; onChange: () => void }) => (
   <button 
@@ -19,12 +20,15 @@ const ToggleSwitch = ({ enabled, onChange }: { enabled: boolean; onChange: () =>
 interface PlaybackViewProps {
   onToggleSidebar?: () => void;
   isSidebarVisible?: boolean;
+  channel: Channel;
+  onChannelChange: (id: number) => void;
+  onNavigateToLive?: () => void;
 }
 
-const PlaybackView: React.FC<PlaybackViewProps> = ({ onToggleSidebar, isSidebarVisible }) => {
-  const activeChannel = CHANNELS[0];
+const PlaybackView: React.FC<PlaybackViewProps> = ({ onToggleSidebar, isSidebarVisible, channel, onChannelChange, onNavigateToLive }) => {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'video' | 'info' | 'analytics'>('video');
+  const [isChannelDropdownOpen, setIsChannelDropdownOpen] = useState(false);
   
   const [recEnabled, setRecEnabled] = useState(true);
   const [notifEnabled, setNotifEnabled] = useState(true);
@@ -43,13 +47,39 @@ const PlaybackView: React.FC<PlaybackViewProps> = ({ onToggleSidebar, isSidebarV
                </button>
                <div className="h-6 w-px bg-gray-800 mx-1"></div>
 
-               <span className="hover:text-white cursor-pointer transition-colors hidden sm:block">{t.shisaCloud}</span>
+               <span 
+                onClick={onNavigateToLive}
+                className="hover:text-white cursor-pointer transition-colors hidden sm:block"
+               >
+                {t.liveMatrix}
+               </span>
                <ChevronRight size={14} className="text-gray-600 hidden sm:block" />
                <span className="hover:text-white cursor-pointer transition-colors hidden xs:block">{t.newsChannels}</span>
                <ChevronRight size={14} className="text-gray-600 hidden xs:block" />
-               <div className="flex items-center gap-1 text-white font-medium bg-gray-800 px-2 py-1 rounded cursor-pointer hover:bg-gray-700 transition-colors">
-                  <span className="truncate max-w-[150px] md:max-w-none">{activeChannel.name}</span>
-                  <ChevronDown size={12} />
+               <div className="relative">
+                <div 
+                  onClick={() => setIsChannelDropdownOpen(!isChannelDropdownOpen)}
+                  className="flex items-center gap-1 text-white font-medium bg-gray-800 px-2 py-1 rounded cursor-pointer hover:bg-gray-700 transition-colors"
+                >
+                    <span className="truncate max-w-[150px] md:max-w-none">{channel.name}</span>
+                    <ChevronDown size={12} className={`transition-transform ${isChannelDropdownOpen ? 'rotate-180' : ''}`} />
+                </div>
+                {isChannelDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-56 bg-[#1a1a1a] border border-gray-700 rounded shadow-xl z-50 py-2 max-h-64 overflow-y-auto">
+                    {CHANNELS.map(c => (
+                      <div 
+                        key={c.id} 
+                        onClick={() => {
+                          onChannelChange(c.id);
+                          setIsChannelDropdownOpen(false);
+                        }}
+                        className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-800 transition-colors ${c.id === channel.id ? 'text-blue-400 font-bold bg-blue-400/10' : 'text-gray-300'}`}
+                      >
+                        {c.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
                </div>
            </div>
 
@@ -91,7 +121,7 @@ const PlaybackView: React.FC<PlaybackViewProps> = ({ onToggleSidebar, isSidebarV
         <div className="flex-1 bg-[#050505] flex flex-col items-center justify-center overflow-hidden p-4 md:p-6">
             {activeTab === 'video' ? (
                 <div className="w-full h-full max-w-6xl max-h-[75vh] bg-black border border-gray-800 relative shadow-2xl rounded-sm overflow-hidden ring-1 ring-white/5">
-                    <VideoFeed channel={activeChannel} />
+                    <VideoFeed channel={channel} />
                 </div>
             ) : activeTab === 'info' ? (
                 <div className="w-full max-w-2xl bg-[#111111] rounded-lg border border-gray-800 shadow-xl overflow-hidden p-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -110,7 +140,7 @@ const PlaybackView: React.FC<PlaybackViewProps> = ({ onToggleSidebar, isSidebarV
                             <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 flex items-center gap-1.5">
                                 <Settings2 size={10} /> {t.channelName}
                             </label>
-                            <p className="text-white font-medium bg-gray-900/50 p-2.5 rounded border border-gray-800">{activeChannel.name}</p>
+                            <p className="text-white font-medium bg-gray-900/50 p-2.5 rounded border border-gray-800">{channel.name}</p>
                         </div>
                         <div className="space-y-1">
                             <label className="text-[10px] uppercase tracking-wider font-bold text-gray-500 flex items-center gap-1.5">

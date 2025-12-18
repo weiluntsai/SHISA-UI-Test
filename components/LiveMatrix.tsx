@@ -10,9 +10,10 @@ import { useLanguage } from '../LanguageContext';
 interface LiveMatrixProps {
   onToggleSidebar?: () => void;
   isSidebarVisible?: boolean;
+  onChannelSelect: (id: number) => void;
 }
 
-const LiveMatrix: React.FC<LiveMatrixProps> = ({ onToggleSidebar, isSidebarVisible }) => {
+const LiveMatrix: React.FC<LiveMatrixProps> = ({ onToggleSidebar, isSidebarVisible, onChannelSelect }) => {
   const [gridSize, setGridSize] = useState(4);
   const { t } = useLanguage();
 
@@ -90,7 +91,9 @@ const LiveMatrix: React.FC<LiveMatrixProps> = ({ onToggleSidebar, isSidebarVisib
         <div className="flex-1 bg-black p-0.5 overflow-y-auto md:overflow-hidden relative">
            <div className={`grid gap-0.5 w-full h-full min-h-[50vh] auto-rows-fr ${getGridCols()}`}>
               {CHANNELS.map(channel => (
-                <VideoFeed key={channel.id} channel={channel} />
+                <div key={channel.id} onClick={() => onChannelSelect(channel.id)} className="cursor-pointer h-full">
+                  <VideoFeed channel={channel} />
+                </div>
               ))}
            </div>
         </div>
