@@ -1,6 +1,8 @@
+
 import { LucideIcon } from 'lucide-react';
 
 export type ChannelStatus = 'live' | 'recording' | 'error' | 'loading';
+export type Language = 'en' | 'zh';
 
 export interface Channel {
   id: number;

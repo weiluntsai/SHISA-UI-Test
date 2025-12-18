@@ -1,14 +1,17 @@
+
 import React, { useState } from 'react';
 import { Grid, LayoutTemplate, Layers, Search, Bell } from 'lucide-react';
 import VideoFeed from './VideoFeed';
 import Timeline from './Timeline';
+import LanguageSelector from './LanguageSelector';
 import { CHANNELS } from '../constants';
+import { useLanguage } from '../LanguageContext';
 
 const LiveMatrix: React.FC = () => {
   const [gridSize, setGridSize] = useState(4);
+  const { t } = useLanguage();
 
   const getGridCols = () => {
-    // Mobile always defaults to 1 or 2 depending on preference, but here we stack on small mobile
     if (gridSize === 2) return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2';
     if (gridSize === 4) return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
     if (gridSize === 9) return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5';
@@ -21,7 +24,7 @@ const LiveMatrix: React.FC = () => {
         <div className="h-14 bg-[#111111] border-b border-gray-800 flex items-center justify-between px-2 md:px-4 z-10 shrink-0">
            {/* Left: View Controls */}
            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-400 mr-2 hidden lg:block">Views:</span>
+              <span className="text-sm font-medium text-gray-400 mr-2 hidden lg:block">{t.views}</span>
               <div className="flex bg-gray-800 rounded p-1 gap-1">
                  <button 
                     onClick={() => setGridSize(2)}
@@ -43,20 +46,21 @@ const LiveMatrix: React.FC = () => {
                  </button>
               </div>
               <div className="h-4 w-px bg-gray-700 mx-2 hidden md:block"></div>
-              <span className="text-sm font-semibold text-white truncate max-w-[100px] md:max-w-none">Default View Group</span>
+              <span className="text-sm font-semibold text-white truncate max-w-[100px] md:max-w-none">{t.defaultViewGroup}</span>
            </div>
 
-           {/* Right: Search & Profile */}
+           {/* Right: Search & Profile & Language */}
            <div className="flex items-center gap-2 md:gap-4">
               <div className="relative hidden md:block">
                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                  <input 
                    type="text" 
-                   placeholder="Find camera or event..." 
-                   className="bg-[#050505] border border-gray-700 text-sm rounded-full pl-9 pr-4 py-1.5 w-64 text-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-gray-600 transition-all"
+                   placeholder={t.findCamera}
+                   className="bg-[#050505] border border-gray-700 text-sm rounded-full pl-9 pr-4 py-1.5 w-48 lg:w-64 text-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 placeholder-gray-600 transition-all"
                  />
-                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-600 border border-gray-700 rounded px-1">⌘K</span>
               </div>
+
+              <LanguageSelector />
               
               <button className="relative p-2 text-gray-400 hover:text-white transition-colors">
                  <Bell size={18} />
