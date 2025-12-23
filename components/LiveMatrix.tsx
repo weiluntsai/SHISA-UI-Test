@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, LayoutTemplate, Layers, Search, Bell, Menu } from 'lucide-react';
+import { Grid, LayoutTemplate, Layers, Search, Bell, Menu, Grid2x2, Grid3x3, Square } from 'lucide-react';
 import VideoFeed from './VideoFeed';
 import Timeline from './Timeline';
 import ProfileDropdown from './ProfileDropdown';
@@ -20,9 +20,11 @@ const LiveMatrix: React.FC<LiveMatrixProps> = ({ onToggleSidebar, isSidebarVisib
   const iconProps = { strokeLinecap: "square" as const, strokeLinejoin: "miter" as const };
 
   const getGridCols = () => {
-    if (gridSize === 2) return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2';
-    if (gridSize === 4) return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
-    if (gridSize === 9) return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5';
+    if (gridSize === 1) return 'grid-cols-1';
+    if (gridSize === 2) return 'grid-cols-1 sm:grid-cols-2'; // Split view
+    if (gridSize === 4) return 'grid-cols-1 sm:grid-cols-2'; // 2x2
+    if (gridSize === 9) return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'; // 3x3
+    if (gridSize === 16) return 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'; // 4x4
     return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
   };
 
@@ -39,6 +41,40 @@ const LiveMatrix: React.FC<LiveMatrixProps> = ({ onToggleSidebar, isSidebarVisib
               >
                 <Menu size={20} {...iconProps} />
               </button>
+
+              <div className="h-6 w-px bg-gray-200 dark:bg-slate-800 mx-1 hidden sm:block"></div>
+
+              {/* Grid Controls */}
+              <div className="flex items-center bg-gray-100 dark:bg-slate-800 rounded p-1">
+                 <button 
+                   onClick={() => setGridSize(1)}
+                   className={`p-1.5 rounded transition-all ${gridSize === 1 ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                   title="1x1 View"
+                 >
+                   <Square size={16} {...iconProps} />
+                 </button>
+                 <button 
+                   onClick={() => setGridSize(4)}
+                   className={`p-1.5 rounded transition-all ${gridSize === 4 ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                   title="2x2 View"
+                 >
+                   <Grid2x2 size={16} {...iconProps} />
+                 </button>
+                 <button 
+                   onClick={() => setGridSize(9)}
+                   className={`p-1.5 rounded transition-all ${gridSize === 9 ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                   title="3x3 View"
+                 >
+                   <Grid3x3 size={16} {...iconProps} />
+                 </button>
+                 <button 
+                   onClick={() => setGridSize(16)}
+                   className={`p-1.5 rounded transition-all ${gridSize === 16 ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                   title="4x4 View"
+                 >
+                   <Grid size={16} {...iconProps} />
+                 </button>
+              </div>
            </div>
 
            {/* Right: Search & Profile & Language */}
