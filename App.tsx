@@ -75,7 +75,7 @@ function MainLayout() {
                   </g>
                </svg>
             </div>
-            <span className="ml-3 font-bold text-xl tracking-tight text-gray-900 dark:text-white whitespace-nowrap">風神雲端</span>
+            <span className="ml-3 font-bold text-lg tracking-tight text-gray-900 dark:text-white whitespace-nowrap">風神雲端監控</span>
           </div>
           {window.innerWidth < 768 && (
             <button onClick={() => setIsSidebarVisible(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
