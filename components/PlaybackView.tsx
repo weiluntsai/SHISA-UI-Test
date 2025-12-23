@@ -247,7 +247,7 @@ const PlaybackView: React.FC<PlaybackViewProps> = ({ onToggleSidebar, isSidebarV
                                 <Power size={10} {...iconProps} /> {t.recStatus}
                             </label>
                             <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 p-2.5 rounded border border-emerald-100 dark:border-emerald-800">
-                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
                                 <p className="text-emerald-700 dark:text-emerald-400 font-black text-base">{t.recRunning}</p>
                             </div>
                         </div>

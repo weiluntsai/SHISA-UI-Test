@@ -37,19 +37,19 @@ const VideoFeed: React.FC<VideoFeedProps> = ({ channel }) => {
         <div className="flex items-center gap-1.5 pointer-events-auto shrink-0 ml-2">
            {channel.status === 'live' && (
              <div className="flex items-center gap-1.5 bg-red-500/90 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/20 shadow-sm transition-transform group-hover:scale-105">
-               <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+               <div className="w-1 h-1 rounded-full bg-white animate-pulse"></div>
                <span className="text-[10px] md:text-xs font-black text-white whitespace-nowrap uppercase tracking-tight">{t.live}</span>
              </div>
            )}
            {channel.status === 'recording' && (
              <div className="flex items-center gap-1.5 bg-blue-500/90 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/20 shadow-sm transition-transform group-hover:scale-105">
-               <div className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_4px_white]"></div>
+               <div className="w-1 h-1 rounded-full bg-white shadow-[0_0_4px_white]"></div>
                <span className="text-[10px] md:text-xs font-black text-white whitespace-nowrap uppercase tracking-tight">{t.rec}</span>
              </div>
            )}
            {channel.status === 'error' && (
              <div className="flex items-center gap-1.5 bg-amber-600/90 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/20 shadow-sm transition-transform group-hover:scale-105">
-               <Activity size={10} className="text-white shrink-0" />
+               <Activity size={8} className="text-white shrink-0" />
                <span className="text-[10px] md:text-xs font-black text-white whitespace-nowrap uppercase tracking-tight">{t.noSignal}</span>
              </div>
            )}
