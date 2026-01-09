@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity } from 'lucide-react';
+import { Activity, WifiOff } from 'lucide-react';
 import { Channel } from '../types';
 import { useLanguage } from '../LanguageContext';
 
@@ -12,67 +12,68 @@ const VideoFeed: React.FC<VideoFeedProps> = ({ channel }) => {
 
   return (
     <div 
-      className="relative w-full h-full bg-slate-900 group overflow-hidden border border-gray-200 dark:border-slate-800 hover:border-blue-500/50 transition-all"
+      className="relative w-full h-full bg-slate-950 group overflow-hidden border border-gray-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 transition-colors duration-200"
     >
-      {/* Background Effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-900 opacity-20 animate-pulse-slow"></div>
-      <div className="absolute inset-0 opacity-5 pointer-events-none bg-[url('https://transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-      <div className="absolute inset-0 opacity-10 pointer-events-none" 
-           style={{
-             backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)', 
-             backgroundSize: '20px 20px'
-           }}>
+      {/* Video Content Placeholder or Stream */}
+      <div className="absolute inset-0 bg-slate-900">
+         {channel.status === 'live' || channel.status === 'recording' ? (
+             <div className={`w-full h-full bg-gradient-to-br ${channel.color} opacity-80 group-hover:opacity-100 transition-opacity`}>
+                {/* Simulated Video Content */}
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-black/60"></div>
+             </div>
+         ) : null}
       </div>
 
-      {/* Top Overlay - Glassmorphism */}
-      <div className="absolute top-0 left-0 right-0 p-1.5 md:p-2 flex justify-between items-center bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none z-10">
-        <div className="flex items-center gap-1.5 md:gap-2 pointer-events-auto min-w-0">
-          <span className="shrink-0 text-[10px] md:text-xs font-mono text-white bg-black/40 backdrop-blur-md px-1.5 py-0.5 rounded border border-white/20">
-            CH-{channel.id.toString().padStart(2, '0')}
-          </span>
-          <span className="text-sm md:text-base font-bold text-white drop-shadow-md truncate min-w-0 max-w-[80px] xs:max-w-[120px] md:max-w-[180px] lg:max-w-[140px] xl:max-w-[200px]">
-            {channel.name}
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5 pointer-events-auto shrink-0 ml-2">
+      {/* Status Overlay - Top (Always Visible) */}
+      <div className="absolute top-0 left-0 right-0 p-2 flex justify-between items-start bg-gradient-to-b from-black/80 to-transparent pointer-events-none z-10">
+         <div className="flex flex-col gap-0.5 pointer-events-auto">
+            <span className="text-[10px] font-mono text-white/70">
+                CH-{channel.id.toString().padStart(2, '0')}
+            </span>
+            <span className="text-sm font-semibold text-white drop-shadow-md tracking-tight">
+                {channel.name}
+            </span>
+         </div>
+      </div>
+
+      {/* Persistent Status Indicators (Always Visible) */}
+      <div className="absolute top-2 right-2 flex items-center gap-1.5 z-20">
            {channel.status === 'live' && (
-             <div className="flex items-center gap-1.5 bg-red-500/90 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/20 shadow-sm transition-transform group-hover:scale-105">
-               <div className="w-1 h-1 rounded-full bg-white animate-pulse"></div>
-               <span className="text-[10px] md:text-xs font-black text-white whitespace-nowrap uppercase tracking-tight">{t.live}</span>
+             <div className="flex items-center gap-1.5 bg-red-600/90 backdrop-blur-sm px-2 py-0.5 rounded shadow-sm">
+               <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+               <span className="text-[10px] font-bold text-white uppercase tracking-wider">{t.live}</span>
              </div>
            )}
            {channel.status === 'recording' && (
-             <div className="flex items-center gap-1.5 bg-blue-500/90 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/20 shadow-sm transition-transform group-hover:scale-105">
-               <div className="w-1 h-1 rounded-full bg-white shadow-[0_0_4px_white]"></div>
-               <span className="text-[10px] md:text-xs font-black text-white whitespace-nowrap uppercase tracking-tight">{t.rec}</span>
+             <div className="flex items-center gap-1.5 bg-blue-600/90 backdrop-blur-sm px-2 py-0.5 rounded shadow-sm">
+               <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
+               <span className="text-[10px] font-bold text-white uppercase tracking-wider">{t.rec}</span>
              </div>
            )}
-           {channel.status === 'error' && (
-             <div className="flex items-center gap-1.5 bg-amber-600/90 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/20 shadow-sm transition-transform group-hover:scale-105">
-               <Activity size={8} className="text-white shrink-0" />
-               <span className="text-[10px] md:text-xs font-black text-white whitespace-nowrap uppercase tracking-tight">{t.noSignal}</span>
-             </div>
-           )}
-        </div>
       </div>
 
+      {/* Error / Loading States */}
       {channel.status === 'error' && (
-        <div className="absolute inset-0 flex items-center justify-center flex-col text-gray-400 bg-black/20">
-           <span className="text-[10px] md:text-xs font-mono uppercase tracking-[0.2em] text-white/40 font-bold px-2 py-1 border border-white/10 rounded backdrop-blur-sm transition-all group-hover:text-white/60">
-             {t.signalLost}
-           </span>
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 z-0">
+           {/* Diagonal Stripes Pattern */}
+           <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'linear-gradient(135deg, #ffffff 10%, transparent 10%, transparent 50%, #ffffff 50%, #ffffff 60%, transparent 60%, transparent 100%)', backgroundSize: '10px 10px' }}></div>
+           
+           <div className="relative z-10 flex flex-col items-center gap-2 text-slate-600">
+               <WifiOff size={32} strokeWidth={1.5} />
+               <span className="text-xs font-mono uppercase tracking-widest font-bold">{t.signalLost}</span>
+           </div>
         </div>
       )}
 
        {channel.status === 'loading' && (
-        <div className="absolute inset-0 flex items-center justify-center flex-col">
-           <div className="w-6 h-6 md:w-8 md:h-8 border-2 border-white/10 border-t-blue-400 rounded-full animate-spin mb-2"></div>
-           <span className="text-[10px] md:text-xs font-mono uppercase tracking-widest text-white/50">{t.connecting}</span>
+        <div className="absolute inset-0 flex items-center justify-center flex-col bg-slate-900 z-10">
+           <div className="w-5 h-5 border-2 border-slate-700 border-t-blue-500 rounded-full animate-spin mb-3"></div>
+           <span className="text-[10px] font-mono uppercase tracking-widest text-slate-500">{t.connecting}</span>
         </div>
       )}
 
-      {/* Subtle scanline effect for surveillance feel */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-0" style={{ backgroundSize: '100% 2px, 3px 100%' }}></div>
+      {/* Hover Focus Effect */}
+      <div className="absolute inset-0 ring-2 ring-inset ring-transparent group-hover:ring-blue-500/50 pointer-events-none transition-all duration-200"></div>
     </div>
   );
 };

@@ -30,85 +30,74 @@ const LiveMatrix: React.FC<LiveMatrixProps> = ({ onToggleSidebar, isSidebarVisib
 
   return (
     <div className="flex flex-col h-full w-full bg-white dark:bg-slate-950">
-        {/* Top Header / Toolbar - Increased Z-Index to z-30 */}
-        <div className="h-14 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between px-2 md:px-4 z-30 shrink-0 transition-colors duration-200">
-           {/* Left: View Controls */}
-           <div className="flex items-center gap-2">
+        {/* Toolbar Header - z-30 for dropdown overlap */}
+        <div className="h-12 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between px-3 z-30 shrink-0 shadow-sm/50">
+           {/* Left: Sidebar & Grid Controls */}
+           <div className="flex items-center gap-3">
               <button 
                 onClick={onToggleSidebar}
-                className={`p-2 rounded hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-gray-400 transition-colors ${isSidebarVisible ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20' : ''}`}
+                className={`p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-slate-400 transition-colors ${isSidebarVisible ? 'text-blue-600 dark:text-blue-500 bg-blue-50 dark:bg-blue-950/30' : ''}`}
                 title="Toggle Sidebar"
               >
-                <Menu size={20} {...iconProps} />
+                <Menu size={18} {...iconProps} />
               </button>
 
-              <div className="h-6 w-px bg-gray-200 dark:bg-slate-800 mx-1 hidden sm:block"></div>
+              <div className="h-4 w-px bg-gray-200 dark:bg-slate-700 hidden sm:block"></div>
 
-              {/* Grid Controls */}
-              <div className="flex items-center bg-gray-100 dark:bg-slate-800 rounded p-1">
-                 <button 
-                   onClick={() => setGridSize(1)}
-                   className={`p-1.5 rounded transition-all ${gridSize === 1 ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
-                   title="1x1 View"
-                 >
-                   <Square size={16} {...iconProps} />
-                 </button>
-                 <button 
-                   onClick={() => setGridSize(4)}
-                   className={`p-1.5 rounded transition-all ${gridSize === 4 ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
-                   title="2x2 View"
-                 >
-                   <Grid2x2 size={16} {...iconProps} />
-                 </button>
-                 <button 
-                   onClick={() => setGridSize(9)}
-                   className={`p-1.5 rounded transition-all hidden sm:block ${gridSize === 9 ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
-                   title="3x3 View"
-                 >
-                   <Grid3x3 size={16} {...iconProps} />
-                 </button>
-                 <button 
-                   onClick={() => setGridSize(16)}
-                   className={`p-1.5 rounded transition-all hidden sm:block ${gridSize === 16 ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
-                   title="4x4 View"
-                 >
-                   <Grid size={16} {...iconProps} />
-                 </button>
+              {/* Grid Toggle Group */}
+              <div className="flex items-center bg-gray-100 dark:bg-slate-800 p-0.5 rounded-md border border-gray-200 dark:border-slate-700">
+                 {[
+                    { size: 1, Icon: Square, title: "1x1" },
+                    { size: 4, Icon: Grid2x2, title: "2x2" },
+                    { size: 9, Icon: Grid3x3, title: "3x3" },
+                    { size: 16, Icon: Grid, title: "4x4" },
+                 ].map(({ size, Icon, title }) => (
+                     <button 
+                       key={size}
+                       onClick={() => setGridSize(size)}
+                       className={`p-1.5 rounded-[4px] transition-all ${gridSize === size ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'} ${size > 4 ? 'hidden sm:block' : ''}`}
+                       title={title}
+                     >
+                       <Icon size={14} {...iconProps} />
+                     </button>
+                 ))}
               </div>
            </div>
 
-           {/* Right: Search & Profile & Language */}
-           <div className="flex items-center gap-2 md:gap-4">
-              <div className="relative hidden md:block">
-                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" {...iconProps} />
+           {/* Right: Search & Profile */}
+           <div className="flex items-center gap-3">
+              <div className="relative hidden md:block group">
+                 <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors" {...iconProps} />
                  <input 
                    type="text" 
                    placeholder={t.findCamera}
-                   className="bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-base rounded-full pl-9 pr-4 py-1.5 w-48 lg:w-64 text-gray-800 dark:text-gray-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 dark:focus:ring-blue-800 placeholder-gray-400 transition-all shadow-inner"
+                   className="bg-gray-100 dark:bg-slate-800 border border-transparent dark:border-slate-700 text-sm rounded-md pl-8 pr-3 py-1.5 w-48 lg:w-64 text-gray-800 dark:text-slate-200 focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 placeholder-gray-400 dark:placeholder-slate-600 transition-all"
                  />
               </div>
               
-              <button className="relative p-2 text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              <button className="relative p-1.5 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 transition-colors">
                  <Bell size={18} {...iconProps} />
-                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 shadow-sm"></span>
+                 <span className="absolute top-1 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
               </button>
+              
+              <div className="w-px h-4 bg-gray-200 dark:bg-slate-700 mx-1"></div>
               
               <ProfileDropdown />
            </div>
         </div>
 
-        {/* Video Grid Area */}
-        <div className="flex-1 bg-gray-100 dark:bg-slate-950 p-0.5 overflow-y-auto md:overflow-hidden relative transition-colors duration-200">
-           <div className={`grid gap-0.5 w-full h-full min-h-[50vh] auto-rows-fr ${getGridCols()}`}>
+        {/* Video Grid - Gap-px for a "Video Wall" look */}
+        <div className="flex-1 bg-gray-200 dark:bg-slate-950 p-px overflow-y-auto md:overflow-hidden relative">
+           <div className={`grid gap-px w-full h-full min-h-[50vh] auto-rows-fr ${getGridCols()}`}>
               {CHANNELS.map(channel => (
-                <div key={channel.id} onClick={() => onChannelSelect(channel.id)} className="cursor-pointer h-full">
+                <div key={channel.id} onClick={() => onChannelSelect(channel.id)} className="cursor-pointer h-full overflow-hidden">
                   <VideoFeed channel={channel} />
                 </div>
               ))}
            </div>
         </div>
 
-        {/* Timeline Docker */}
+        {/* Timeline */}
         <Timeline position={position} onPositionChange={setPosition} />
     </div>
   );

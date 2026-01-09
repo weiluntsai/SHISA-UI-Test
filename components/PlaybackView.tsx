@@ -19,7 +19,8 @@ import {
   Settings2, 
   Menu,
   Calendar,
-  ArrowLeft
+  ArrowLeft,
+  Clock
 } from 'lucide-react';
 import VideoFeed from './VideoFeed';
 import Timeline from './Timeline';
@@ -64,8 +65,24 @@ const PlaybackView: React.FC<PlaybackViewProps> = ({ onToggleSidebar, isSidebarV
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [timeInput, setTimeInput] = useState({ h: '11', m: '49', s: '15' });
 
+  // Export Clip State
+  const [exportStartTime, setExportStartTime] = useState("2025/12/14 10:30:00");
+  const [exportEndTime, setExportEndTime] = useState("2025/12/14 10:35:00");
+
   const formatDateValue = (date: Date) => {
       return `${date.getFullYear()}/${(date.getMonth()+1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
+  };
+
+  const handleQuickDuration = (minutes: number) => {
+    // Simple parse assuming format YYYY/MM/DD HH:mm:ss which is standard in this app
+    const d = new Date(exportStartTime);
+    if(!isNaN(d.getTime())) {
+        d.setMinutes(d.getMinutes() + minutes);
+        
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        const newStr = `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+        setExportEndTime(newStr);
+    }
   };
 
   // Handle Playback Loop
@@ -397,17 +414,34 @@ const PlaybackView: React.FC<PlaybackViewProps> = ({ onToggleSidebar, isSidebarV
                                 <Lock size={12} className="text-blue-400" {...iconProps} />
                                 <span className="text-xs uppercase text-gray-400 dark:text-gray-500 font-black tracking-widest">{t.start}</span>
                             </div>
-                            <input type="text" defaultValue="2025/12/14 00:00:00" className="bg-transparent border-none text-sm font-mono font-bold text-gray-800 dark:text-gray-200 w-full md:w-36 px-2 focus:outline-none" />
+                            <input 
+                              type="text" 
+                              value={exportStartTime} 
+                              onChange={(e) => setExportStartTime(e.target.value)}
+                              className="bg-transparent border-none text-sm font-mono font-bold text-gray-800 dark:text-gray-200 w-full md:w-36 px-2 focus:outline-none" 
+                            />
                         </div>
                         
-                        <span className="text-gray-300 dark:text-slate-600 font-light hidden sm:block">-</span>
+                        {/* Quick Select Buttons */}
+                        <div className="flex flex-col gap-0.5">
+                            <div className="flex gap-1">
+                                <button onClick={() => handleQuickDuration(5)} className="px-1.5 py-0.5 text-[10px] font-bold bg-gray-100 dark:bg-slate-700 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 rounded transition-colors">5m</button>
+                                <button onClick={() => handleQuickDuration(10)} className="px-1.5 py-0.5 text-[10px] font-bold bg-gray-100 dark:bg-slate-700 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 rounded transition-colors">10m</button>
+                                <button onClick={() => handleQuickDuration(15)} className="px-1.5 py-0.5 text-[10px] font-bold bg-gray-100 dark:bg-slate-700 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 rounded transition-colors">15m</button>
+                            </div>
+                        </div>
 
                         <div className="flex items-center gap-2 bg-white dark:bg-slate-800 p-1.5 rounded border border-gray-200 dark:border-slate-700 shadow-sm w-full md:w-auto group">
                             <div className="flex items-center gap-2 px-2 border-r border-gray-100 dark:border-slate-700">
                                 <Lock size={12} className="text-blue-400" {...iconProps} />
                                 <span className="text-xs uppercase text-gray-400 dark:text-gray-500 font-black tracking-widest">{t.end}</span>
                             </div>
-                            <input type="text" defaultValue="2025/12/14 23:59:59" className="bg-transparent border-none text-sm font-mono font-bold text-gray-800 dark:text-gray-200 w-full md:w-36 px-2 focus:outline-none" />
+                            <input 
+                              type="text" 
+                              value={exportEndTime} 
+                              onChange={(e) => setExportEndTime(e.target.value)}
+                              className="bg-transparent border-none text-sm font-mono font-bold text-gray-800 dark:text-gray-200 w-full md:w-36 px-2 focus:outline-none" 
+                            />
                         </div>
                     </div>
 

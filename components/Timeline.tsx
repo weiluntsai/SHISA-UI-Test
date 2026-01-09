@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Calendar, ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Play, Maximize2 } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
 import DatePicker from './DatePicker';
 
@@ -69,7 +69,6 @@ const Timeline: React.FC<TimelineProps> = ({ hideControls = false, position, onP
     };
   }, []);
 
-  // Calculate current time based on position for the label
   const totalMinutes = 24 * 60;
   const currentMinutes = (position / 100) * totalMinutes;
   const h = Math.floor(currentMinutes / 60);
@@ -89,18 +88,18 @@ const Timeline: React.FC<TimelineProps> = ({ hideControls = false, position, onP
   return (
     <div className={`flex flex-col select-none shrink-0 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 transition-colors duration-200 ${hideControls ? 'h-16' : 'h-24'}`}>
       {!hideControls && (
-        <div className="h-12 flex items-center justify-between px-4 border-b border-gray-200 dark:border-slate-800 bg-gray-50/50 dark:bg-slate-900">
-           <div className="flex items-center gap-4">
-              {/* Date Picker Section */}
+        <div className="h-10 flex items-center justify-between px-3 border-b border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-900">
+           <div className="flex items-center gap-3">
+              {/* Date Picker */}
               <div className="relative">
                   <button 
                     onClick={() => setShowDatePicker(!showDatePicker)}
-                    className={`flex items-center gap-2 px-3 py-1 bg-white dark:bg-slate-800 border rounded transition-all
-                        ${showDatePicker ? 'border-blue-500 ring-2 ring-blue-100 dark:ring-blue-900/30' : 'border-gray-300 dark:border-slate-600 hover:border-blue-400'}
+                    className={`flex items-center gap-2 px-2 py-0.5 bg-white dark:bg-slate-800 border rounded text-xs transition-all
+                        ${showDatePicker ? 'border-blue-500 text-blue-600' : 'border-gray-300 dark:border-slate-700 text-gray-600 dark:text-slate-400 hover:border-blue-400'}
                     `}
                   >
-                     <span className="text-base font-mono font-bold text-blue-600 dark:text-blue-400">{formatDateValue(selectedDate)}</span>
-                     <Calendar size={16} className="text-gray-400 dark:text-gray-500" {...iconProps} />
+                     <span className="font-mono font-bold">{formatDateValue(selectedDate)}</span>
+                     <Calendar size={12} />
                   </button>
                   {showDatePicker && (
                       <DatePicker 
@@ -111,85 +110,75 @@ const Timeline: React.FC<TimelineProps> = ({ hideControls = false, position, onP
                   )}
               </div>
 
-              {/* Time Input Section */}
-              <div className="flex items-center gap-1 hidden sm:flex">
-                  <input 
-                    type="text" 
-                    value={timeInput.h}
-                    onChange={(e) => setTimeInput({...timeInput, h: e.target.value})}
-                    className="w-9 h-8 text-center text-lg font-mono font-bold text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
-                  <span className="text-gray-400 font-bold">:</span>
-                  <input 
-                    type="text" 
-                    value={timeInput.m}
-                    onChange={(e) => setTimeInput({...timeInput, m: e.target.value})}
-                    className="w-9 h-8 text-center text-lg font-mono font-bold text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
-                  <span className="text-gray-400 font-bold">:</span>
-                  <input 
-                    type="text" 
-                    value={timeInput.s}
-                    onChange={(e) => setTimeInput({...timeInput, s: e.target.value})}
-                    className="w-9 h-8 text-center text-lg font-mono font-bold text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
+              {/* Time Display */}
+              <div className="flex items-center gap-1 hidden sm:flex bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded px-1.5 py-0.5">
+                  <span className="font-mono text-sm font-bold text-blue-600 dark:text-blue-400">{timeInput.h}:{timeInput.m}:{timeInput.s}</span>
               </div>
 
-              <div className="h-4 w-px bg-gray-300 dark:bg-slate-700 mx-1 hidden sm:block"></div>
+              <div className="h-3 w-px bg-gray-300 dark:bg-slate-700 mx-1 hidden sm:block"></div>
 
-              {/* Playback Controls */}
-              <div className="flex gap-2">
-                 <button className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"><ChevronLeft size={20} {...iconProps} /></button>
-                 <button className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"><Play size={20} fill="currentColor" {...iconProps} /></button>
-                 <button className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"><ChevronRight size={20} {...iconProps} /></button>
-              </div>
-
-              <div className="text-xs uppercase font-bold text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-800 dark:hover:text-blue-300 hidden sm:block tracking-widest ml-2">
-                {t.speed} 1X
+              {/* Mini Controls */}
+              <div className="flex gap-1">
+                 <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400"><ChevronLeft size={16} /></button>
+                 <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400"><Play size={16} fill="currentColor" /></button>
+                 <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400"><ChevronRight size={16} /></button>
               </div>
            </div>
            
-           <div className="flex gap-2">
-              <button className="text-xs font-bold px-2 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-slate-700 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">1H</button>
-              <button className="text-xs font-bold px-2 py-0.5 rounded bg-blue-600 text-white shadow-sm hover:bg-blue-700 transition-colors">24H</button>
+           <div className="flex gap-1.5">
+              <button className="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-400 border border-transparent hover:border-gray-300 dark:hover:border-slate-600 transition-all">1H</button>
+              <button className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 transition-all">24H</button>
            </div>
         </div>
       )}
 
+      {/* Timeline Ruler */}
       <div 
         ref={containerRef}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className="flex-1 relative overflow-hidden cursor-ew-resize group bg-gray-50/20 dark:bg-slate-900/50 touch-none"
+        className="flex-1 relative overflow-hidden cursor-ew-resize group bg-gray-50 dark:bg-slate-950 touch-none"
       >
-        {/* Interactive Cursor */}
+        {/* Playhead */}
         <div 
-          className="absolute top-0 bottom-0 w-0.5 bg-blue-500 z-30 shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-shadow duration-150 pointer-events-none"
+          className="absolute top-0 bottom-0 w-px bg-red-500 z-30 pointer-events-none"
           style={{ left: `${position}%` }}
         >
-           <div className="absolute top-0 -translate-x-1/2 -mt-1 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-blue-500"></div>
-           <div className="absolute top-4 -translate-x-1/2 bg-blue-500 text-white text-[10px] font-bold px-1 rounded shadow-md pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+           <div className="absolute top-0 -translate-x-1/2 w-3 h-3 bg-red-500 transform rotate-45 -mt-1.5 shadow-sm"></div>
+           <div className="absolute top-4 -translate-x-1/2 bg-red-500 text-white text-[9px] font-mono px-1.5 py-0.5 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
              {timeString}
            </div>
+           <div className="absolute bottom-0 -translate-x-1/2 w-1.5 h-1.5 bg-red-500 rounded-full mb-0.5"></div>
         </div>
 
-        <div className="absolute inset-0 flex items-end pointer-events-none">
+        {/* Ruler Marks */}
+        <div className="absolute inset-0 flex items-end pointer-events-none select-none">
            {hours.map(hour => (
-             <div key={hour} className="flex-1 flex flex-col items-start h-full justify-end border-l border-gray-100 dark:border-slate-800 relative group-hover:border-gray-200/50 dark:group-hover:border-slate-700/50 transition-colors">
-                {/* Recording Blocks - Randomly placed for demo effect */}
-                {hour >= 8 && hour <= 20 && (
-                  <div className="absolute bottom-4 left-0 right-0 h-3 bg-emerald-500/80 group-hover:opacity-100 transition-opacity"></div>
-                )}
-                {hour % 4 === 0 && (
-                  <div className="absolute bottom-4 left-0 right-1/2 h-3 bg-blue-400/30"></div>
-                )}
+             <div key={hour} className="flex-1 flex flex-col items-start h-full justify-end border-l border-gray-200 dark:border-slate-800 relative">
                 
-                <span className={`text-xs text-gray-500 dark:text-white font-mono ml-1 mb-2 font-bold select-none ${hour % 3 !== 0 ? 'hidden md:block' : ''}`}>
+                {/* Recording Data Blocks */}
+                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-transparent">
+                    {/* Mock Recording Segments */}
+                    {hour >= 8 && hour <= 20 && (
+                        <div className="absolute bottom-2 left-0 right-0 h-4 bg-emerald-500/20 border-b-2 border-emerald-500/50"></div>
+                    )}
+                    {/* Motion Events */}
+                    {hour % 5 === 0 && (
+                        <div className="absolute bottom-2 left-2 w-1 h-4 bg-amber-500"></div>
+                    )}
+                </div>
+
+                {/* Ticks */}
+                <div className="w-px h-2 bg-gray-300 dark:bg-slate-600 absolute bottom-0 left-0"></div>
+                <div className="w-px h-1 bg-gray-200 dark:bg-slate-700 absolute bottom-0 left-1/4"></div>
+                <div className="w-px h-1.5 bg-gray-200 dark:bg-slate-700 absolute bottom-0 left-1/2"></div>
+                <div className="w-px h-1 bg-gray-200 dark:bg-slate-700 absolute bottom-0 left-3/4"></div>
+                
+                <span className={`text-[10px] text-gray-400 dark:text-slate-500 font-mono ml-1 mb-6 ${hour % 2 !== 0 ? 'hidden md:block' : ''}`}>
                     {hour.toString().padStart(2, '0')}:00
                 </span>
-                <div className="h-2 w-px bg-gray-300 dark:bg-slate-700"></div>
              </div>
            ))}
         </div>
